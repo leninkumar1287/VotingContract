@@ -42,9 +42,9 @@
  */
 
 // require('dotenv').config();
-// const { MNEMONIC, PROJECT_ID } = process.env;
-// const HDWalletProvider = require('@truffle/hdwallet-provider');
-
+const fs = require('fs')
+const HDWalletProvider = require('@truffle/hdwallet-provider');
+const mnemonicPhrase = fs.readFileSync("/home/neosoft/nemonic.secret").toString().trim()
 module.exports = {
   /**
    * Networks define how you connect to your ethereum client and let you set the
@@ -68,10 +68,17 @@ module.exports = {
      port: 7545,            // Standard Ethereum port (default: none)
      network_id: "*",       // Any network (default: none)
     },
-    ganche: {
+    ganache: {
       host: "localhost",
       port: 7545,
       network_id:"*"
+    },
+    mumbai: {
+      provider: () => new HDWalletProvider(mnemonicPhrase,'https://rpc-mumbai.maticvigil.com/'),
+      network_id: 80001,
+      confirmations: 2,
+      timeoutBlocks: 200,
+      skipDryRun: true
     }
     //
     // An additional network, but with some advanced options…

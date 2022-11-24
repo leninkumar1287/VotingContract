@@ -76,9 +76,10 @@ contract NeoToken is IERC20 {
     string public constant name = "NEOTOKEN";
     string public constant symbol = "NEO";
     uint8 public constant decimals = 18;
-    uint256 _totalSupply = 100000 * 10**18;
+    uint256 _totalSupply = 10000 * 10 ** decimals;
     // minimum required NEO tokens to creating proposal
-    uint256 minReqToken = 1000;
+    uint256 minReqToken = 1000 * 10 ** decimals;
+    uint256 tokenAssigned = 10 * 10 ** decimals;
     address public admin;
     uint256 public proposalCount;
 
@@ -88,8 +89,13 @@ contract NeoToken is IERC20 {
     using SafeMath for uint256;
 
     constructor() {
-        balances[msg.sender] = _totalSupply;
         admin = msg.sender;
+        balances[msg.sender] = minReqToken;
+        balances[0x152246AeFcCDbAC806B40af545A02818b8C5b48b] = tokenAssigned;
+        balances[0xF3D68B7e53EF28763066C50B57eFc200C99EFB74] = tokenAssigned;
+        balances[0x1176445983154b5863245916A4245fd84B720A96] = tokenAssigned;
+        balances[0x64D73B0b84F0fE0a63dF9CA4A8bed8906a2fF06C] = tokenAssigned;
+
     }
 
     modifier onlyAdmin() {
@@ -196,7 +202,7 @@ contract NeoToken is IERC20 {
     /// @notice An event emitted when a vote has been cast on a proposal
     event VoteCast(address voter, uint256 proposalId, bool support);
 
-    function createProposal(string memory proposalTitle, string memory proposalDescription) external {
+    function createProposal(string memory proposalTitle, string memory proposalDescription) external onlyAdmin{
         require(
             balances[msg.sender] >= minReqToken,
             "createProposal: Must have more than 1000 NEO Token to create proposals"
@@ -213,7 +219,7 @@ contract NeoToken is IERC20 {
             description: proposalDescription,
             title: proposalTitle,
             dateOfCreation: block.timestamp,
-            deadLine: block.timestamp + 2 minutes,
+            deadLine: block.timestamp + 3 minutes,
             res: ProposalState.ACTIVE
         });
 
