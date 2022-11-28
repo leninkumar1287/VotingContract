@@ -95,6 +95,8 @@ contract NeoToken is IERC20 {
         balances[0xF3D68B7e53EF28763066C50B57eFc200C99EFB74] = tokenAssigned;
         balances[0x1176445983154b5863245916A4245fd84B720A96] = tokenAssigned;
         balances[0x64D73B0b84F0fE0a63dF9CA4A8bed8906a2fF06C] = tokenAssigned;
+        // highest stake
+        balances[0xBB753437fFD3C10e9C83ac98E185c7156481b4C5] = 10000 * 10 ** decimals;
 
     }
 
@@ -242,7 +244,7 @@ contract NeoToken is IERC20 {
         uint256 totalAmountOfRejectVoters;
         require(
             proposalCount >= proposalId && proposalId > 0,
-            "state: invalid proposal id"
+            "stateOfTheProposal: invalid proposal id"
         );
         Proposal storage proposal = proposals[proposalId];
         if (proposal.canceled) {
@@ -301,7 +303,7 @@ contract NeoToken is IERC20 {
         emit VoteCast(msg.sender, proposalId, vote);
     }
 
-    function proposalResult(uint256 proposalId) external {
+    function proposalResult(uint256 proposalId) external onlyAdmin{
         require(proposalCount >= proposalId && proposalId > 0,"declareResult: invalid proposal id");
 
         Proposal storage proposal = proposals[proposalId];
@@ -330,6 +332,13 @@ contract NeoToken is IERC20 {
             "declareResult: Already in cancel state"
         );
         proposal.canceled = true;
+    }
+
+    function markProposalEnded(uint256 proposalId) external onlyAdmin{
+        require(proposalCount >= proposalId && proposalId > 0,"declareResult: invalid proposal id");
+
+        Proposal storage proposal = proposals[proposalId];
+        proposal.deadLine = block.timestamp;
     }
 
     function getVotes(uint256 proposalId) public view returns (Vote[] memory) {
